@@ -204,6 +204,7 @@ int GetNumberOfDetectedProcessors( void )
           #if (CLIENT_CPU == CPU_X86      || \
                CLIENT_CPU == CPU_AMD64    || \
                CLIENT_CPU == CPU_POWERPC  || \
+	           CLIENT_CPU == CPU_PPC64    || \
                CLIENT_CPU == CPU_S390     || \
                CLIENT_CPU == CPU_S390X    || \
                CLIENT_CPU == CPU_PA_RISC)
@@ -514,7 +515,7 @@ static long __GetRawProcessorID(const char **cpuname)
 
 /* ---------------------------------------------------------------------- */
 
-#if (CLIENT_CPU == CPU_POWERPC) || (CLIENT_CPU == CPU_CELLBE)
+#if (CLIENT_CPU == CPU_POWERPC) || (CLIENT_CPU == CPU_PPC64) || (CLIENT_CPU == CPU_CELLBE)
 
 /* note: Non-PVR based numbers start at 0x10000 (real PVR numbers are 16bit) */
 # define NONPVR(x) ((1L << 16) + (x))
@@ -2652,7 +2653,7 @@ unsigned int GetProcessorFrequency(int device)
       }
     }
   #elif  (CLIENT_OS == OS_LINUX) && \
-        ((CLIENT_CPU == CPU_POWERPC) || (CLIENT_CPU == CPU_CELLBE))
+        ((CLIENT_CPU == CPU_POWERPC) || (CLIENT_CPU == CPU_CELLBE) || (CLIENT_CPU == CPU_PPC64))
     FILE *cpuinfo = fopen("/proc/cpuinfo", "r");
     if ( cpuinfo )
     {
@@ -2687,7 +2688,7 @@ unsigned long GetProcessorFeatureFlags(int device)
 
   #if (CLIENT_CPU == CPU_X86) || (CLIENT_CPU == CPU_AMD64)
     return (__GetRawProcessorID(NULL, 'f')) | (x86GetFeatures());
-  #elif (CLIENT_CPU == CPU_POWERPC) || (CLIENT_CPU == CPU_CELLBE)
+  #elif (CLIENT_CPU == CPU_POWERPC) || (CLIENT_CPU == CPU__PPC64) || (CLIENT_CPU == CPU_CELLBE)
     unsigned long ppc_features = 0;
     #if (CLIENT_OS == OS_MACOSX)
       // AltiVec support now has a proper sysctl value HW_VECTORUNIT to check
@@ -2777,12 +2778,13 @@ void GetProcessorInformationStrings( int device, const char ** scpuid, const cha
 {
   const char *maxcpu_s, *foundcpu_s, *cpuid_s;
 
-#if (CLIENT_CPU == CPU_ALPHA)   || (CLIENT_CPU == CPU_68K)   || \
-    (CLIENT_CPU == CPU_POWERPC) || (CLIENT_CPU == CPU_POWER) || \
-    (CLIENT_CPU == CPU_CELLBE)  || (CLIENT_CPU == CPU_X86)   || \
-    (CLIENT_CPU == CPU_AMD64)   || (CLIENT_CPU == CPU_MIPS)  || \
-    (CLIENT_CPU == CPU_SPARC)   || (CLIENT_CPU == CPU_ARM)   || \
-    (CLIENT_CPU == CPU_CUDA)    || (CLIENT_CPU == CPU_ATI_STREAM) || (CLIENT_CPU == CPU_OPENCL)
+#if (CLIENT_CPU == CPU_ALPHA)   || (CLIENT_CPU == CPU_68K)     || \
+    (CLIENT_CPU == CPU_POWERPC) || (CLIENT_CPU == CPU_POWER)   || \
+    (CLIENT_CPU == CPU_CELLBE)  || (CLIENT_CPU == CPU_PPC64)   || \
+    (CLIENT_CPU == CPU_X86)     || (CLIENT_CPU == CPU_AMD64)   || \
+    (CLIENT_CPU == CPU_MIPS)    || (CLIENT_CPU == CPU_SPARC)   || \
+    (CLIENT_CPU == CPU_ARM)     || (CLIENT_CPU == CPU_CUDA)    || \
+    (CLIENT_CPU == CPU_ATI_STREAM) || (CLIENT_CPU == CPU_OPENCL)
   #if (CLIENT_CPU == CPU_CUDA) || (CLIENT_CPU == CPU_ATI_STREAM) || (CLIENT_CPU == CPU_OPENCL)
   long rawid = __GetRawProcessorID(device, &cpuid_s);
   #else
@@ -2865,7 +2867,7 @@ void GetProcessorInformationStrings( int device, const char ** scpuid, const cha
     if (features & CPU_F_AVX2) {
       strcat( namebuf, "AVX2 ");
     }
-  #elif (CLIENT_CPU == CPU_POWERPC) || (CLIENT_CPU == CPU_CELLBE)
+  #elif (CLIENT_CPU == CPU_POWERPC) || (CLIENT_CPU == CPU_PPC64) || (CLIENT_CPU == CPU_CELLBE)
     sprintf(namebuf, "%08lX\n\tname: %s", rawid, cpuid_s );
   #else
     sprintf(namebuf, "%ld\n\tname: %s", rawid, cpuid_s );

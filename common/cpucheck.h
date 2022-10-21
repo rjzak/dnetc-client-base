@@ -42,7 +42,7 @@ unsigned long GetProcessorCoreHints(void);
 
 #endif
 
-#if (CLIENT_CPU == CPU_POWERPC) || (CLIENT_CPU == CPU_CELLBE)
+#if (CLIENT_CPU == CPU_POWERPC) || (CLIENT_CPU == CPU_CELLBE) || (CLIENT_CPU == CPU_PPC64)
   #define CPU_F_ALTIVEC         (0x00000001L)
   #define CPU_F_64BITOPS        (0x00000002L)
   #define CPU_F_SYNERGISTIC     (0x00000004L)
